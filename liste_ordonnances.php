@@ -1,0 +1,11 @@
+<option value="1">Calvitie</option>
+<option value="2">Htm</option>
+<option value="3">Lifting</option>
+<option value="4">Oreilles</option>
+<option value="5">Paupieres</option>
+<option value="6">Plastie</option>
+<option value="7">Protheses</option>
+<option value="8">Ptose</option>
+<option value="9">Rhino</option>
+<option value="12">Vierge</option>
+<option value="11">Lipo</option>

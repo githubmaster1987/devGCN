@@ -1,0 +1,14 @@
+Sources multi-upload d'images avec utilisation Ajax. (Compatible Flash version 10).
+
+1/ Possibilité de créer autant de dossier que voulu.
+2/ Possibilité de suprimer un dossier complet (et tout ce qu'il contient).
+3/ Possibilité de supprimer les images unes à unes.
+4/ Possibilité de selectionner un groupe d'image avant hébergement.
+
+Contrairement aux autres sources, elle est compatible avec la récente mise à jour de Flash (la version 10).
+
+Elle fonctionne sous Explorer 7.0 et Firefox 3.0 à condition de mettre à jour son player flash ^^.
+
+Dernière chose, avant de tester sur votre serveur, il faut absolument passer le dossier upload en CHMOD 777.
+
+Liniz

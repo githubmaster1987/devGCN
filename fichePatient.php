@@ -1,0 +1,300 @@
+<?php 
+Require("connexionBDD.php");
+session_start(); // On relaye la session
+Require("Auth.inc.php");
+
+/*code pour le bouton modifier notes*/
+if(isset($_POST['modifNote']))
+{
+$notes=$_POST['note'];
+$sqlNotes="UPDATE `Patients` SET `Notes` = '$notes' WHERE `Id` = '".$_POST['PatientID']."' ;";
+$sqlNoteExe=mysql_query($sqlNotes);
+}
+//code pour le bouton supprimer
+if(isset($_POST['Supprimer'])){
+	
+$query = "DELETE FROM `Patients` WHERE `Id`= '".$_POST['PatientID']."';";
+$result= mysql_query($query);
+
+$queryCRO = "DELETE FROM `CROPatients` WHERE `PatientId`= '".$_POST['PatientID']."';";
+$resultCRO= mysql_query($queryCRO);
+
+$queryPhoto = "DELETE FROM `PhotosPatients` WHERE `IdPatient`= '".$_POST['PatientID']."';";
+$resultPhoto= mysql_query($queryPhoto);
+
+$queryDoc = "DELETE FROM `DocPatients` WHERE `IdPatient`= '".$_POST['PatientID']."';";
+$resultDoc= mysql_query($queryDoc);
+header("Location:index.php");
+}
+
+
+if(isset($_GET['PatientID']))
+{
+	$sql = "Select * From `Patients`  Where `Id` = '". $_GET['PatientID']."' LIMIT 1;";	
+	$sqlRecup=mysql_query($sql);
+	$sqldata = mysql_fetch_array($sqlRecup);
+	
+	$sqldoc = "SELECT Count(*) 'count' FROM `DocPatients` Where `IdPatient` = '". $_GET['PatientID']."' LIMIT 1;";	
+	$sqlRecupdoc =mysql_query($sqldoc);
+	$sqldatadoc = mysql_fetch_array($sqlRecupdoc);
+	
+	$sqlPho = "SELECT COUNT(*) 'count' FROM `PhotosPatients` WHERE `IdPatient` = '". $_GET['PatientID']."' LIMIT 1;";
+	$sqlRecupPho =mysql_query($sqlPho);
+	$sqldataPho = mysql_fetch_array($sqlRecupPho);
+}else
+{
+	header("Location:index.php");
+}
+
+
+//Affichage de la date au format JJ/MM/AAAA
+$date = $sqldata['DateN'];
+$jour = substr($date, 8, 2);
+$mois = substr($date, 5, 2);
+$annee = substr($date, 0, 4);
+$datenew = "$jour/$mois/$annee";
+
+
+
+include("header.html");
+?>
+
+	<!-- GESTION SECRET -->
+	<div style="position:absolute; z-index:999; left:50%; margin-left:304px; margin-top:-37px; height:25px; width:25px; border:solid 0px" ondblclick="display_secret()"></div>
+	
+	<div id="secret" style="position:absolute; left:50%; padding:5px; margin-left:185px; margin-top:0px; background-color:lightgrey; border:solid 2px black; display:none">
+		Montant : <input id="montant" type="text" style="width:100px"> &euro;<br>
+		Moyen de paiement : <select id="moyendepaiement"><option value="Especes">Especes</option><option value="Cheque">Cheque</option><option value="Carte bancaire">Carte bancaire</option></select><br>
+		Type : <select id="type"><option value="Consultation">Consultation</option><option value="Injection">Injection</option><option value="Chirurgie">Chirurgie</option></select><br>
+		<input type="button" value="Valider" style="width:100%; margin-top:15px; cursor:pointer" onclick="valid_secret('<?php echo strtoupper($sqldata['Nom'])." ". ucfirst(strtolower($sqldata['Prenom'])) ?>')">
+		<input type="button" value="Gestion" style="width:100%; margin-top:5px; cursor:pointer" onclick="window.open('Paiements_gestion.php')">
+	</div>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script> 
+	<script>
+		function display_secret()
+		{
+			if ($('#secret').css('display') == 'none') $('#secret').css('display','block');
+			else $('#secret').css('display','none');
+		}
+		
+		function valid_secret(patient)
+		{
+			montant = $('#montant').val();
+			moyendepaiement = $('#moyendepaiement').val();
+			type = $('#type').val();
+			$.get("Paiements.php",{patient:patient,montant:montant,moyendepaiement:moyendepaiement,type:type},function(data)
+			{
+				alert('La paiement a bien \u00E9t\u00E9 ajout\u00E9.');
+				window.location.href = 'Paiements.xls';
+			});
+		}
+	</script>
+	<!-- /GESTION SECRET -->
+
+<div id="content" align="center" style="padding-bottom:20px;background-image:url('images/bg_repeat.png'); background-repeat:repeat-y; width:806;">
+   
+   <table cellpadding="2" cellspacing="2">
+   
+   	   <tr>
+			<td colspan="3"><center>
+				<table border="0" cellspacing="0" cellpadding="0">
+				    <tr>
+				        <td width="12"><img src="images/menuGCM_gch.png" width="12" height="27" border="0" /></td>
+				        <td id="menu" valign="middle" background="images/menuGCM_centre.png" height="27" style="background-repeat:repeat-x;"><a href="index.php" style="text-decoration:none;">Index</a>&nbsp;&nbsp;<font style="color:#5782af;">|</font>&nbsp;&nbsp;<a href="ficheVierge.php" style="text-decoration:none;">Nouvelle fiche</a>&nbsp;&nbsp;<font style="color:#5782af;">|</font>&nbsp;&nbsp;<a href="recherche.php" style="text-decoration:none;">Recherche</a></td>
+				        <td width="12"><img src="images/menuGCM_drt.png" width="12" height="27" border="0" /></td>
+				    </tr>
+				</table>
+	   		</center></td>
+		</tr>
+	   <tr height="100px">
+   			<td colspan="2"><center><h3>Fiche patient - "<?php echo strtoupper($sqldata['Nom'])." ". ucfirst(strtolower($sqldata['Prenom'])) ?>"</h3></center></td>	
+   	   </tr>
+	   <tr height="30"><!--BOUTONS-->
+		   	<td colspan="2">
+		   		<center>
+			   		<table cellpadding="0" cellspacing="0" border="0">
+			   			<tr>
+			   				<td valign="bottom"><input type="button" onclick="redirModifInfos()" value="Modifier informations" name="modifInfo"/>&nbsp;&nbsp;</td>
+							<td>
+								<form method="post" onSubmit="return confirm('Etes-vous s&ucirc;r de supprimer ce patient ?')">
+									<input type="hidden" name="PatientID" value="<?php echo $sqldata['Id']; ?>" ><input type="submit" value="Supprimer" name="Supprimer"/>&nbsp;&nbsp;
+								</form>
+							</td>
+							<td valign="top"><input type="button" onclick="redirCROManager()" value="Gestion CRO"/>&nbsp;&nbsp;</td>
+							<td valign="top"><input type="button" onclick="redirDoc()" value="Documents (<?php echo $sqldatadoc['count']; ?>)"/>&nbsp;&nbsp;</td>
+							<td valign="top"><input type="button" onclick="redirPhotos()" value="Photos (<?php echo $sqldataPho['count'];?>)"/></td>
+						</tr>
+			   		</table>
+		   		</center>
+			</td>
+	   </tr>
+	   <tr height="40"><!--BOUTONS-->
+		   	<td colspan="2">
+		   		<center>
+			   		<table cellpadding="0" cellspacing="0" border="0">
+                    	<tr>
+			   				<td valign="top"><input type="button" onclick="redirOrdo()" value="Ordonnances"/>&nbsp;&nbsp;</td>
+			   				<td valign="top"><input type="button" onclick="redirDevisManager()" value="Gestion Devis"/></td>
+						</tr>
+			   		</table>
+		   		</center>
+			</td>
+	   </tr>
+	   <tr><!--SEXE-->
+		   <td><label for="sexe">Sexe</label> : </td>
+		   <td><strong><?php echo $sqldata['Sexe']; ?></strong></td>
+	   <tr>
+	   <tr><!--CIVILITE-->
+		   <td><label for="civilite">Civilit&eacute;</label> : </td>
+		   <td><strong><?php echo $sqldata['Civilite']; ?></strong></td>
+	   <tr>
+	   
+	   <tr><!--NOM-->
+		   <td width="250"><label for="nom">Nom</label> : </td>
+		   <td><strong><?php echo $sqldata['Nom']; ?></strong></td>
+	   </tr>
+	   
+	   <tr><!--PRENOM-->
+		   <td><label for="prenom">Pr&eacute;nom</label> : </td>
+		   <td><strong><?php echo $sqldata['Prenom']; ?></strong></td>
+	   </tr>
+	   
+	   <tr><!--DATE NAISSANCE-->
+		   <td><label for="dateNaissance">N&eacute;(e) le</label> : </td>
+		   <td><strong><?php echo $datenew; ?></strong></td>
+	   </tr>
+	   
+	   
+	   <tr><!--AGE-->
+		   <td><label for="age">Age</label> : </td>
+		   <td><strong><?php echo $sqldata['Age']; ?></strong></td>
+	   <tr>
+	   
+	   <tr><!--POIDS-->
+		   <td><label for="poids">Poids</label> : </td>
+		   <td><strong><?php echo $sqldata['Poids']; ?></strong></td>
+	   </tr>
+	   
+	   <tr><!--TAILLE-->
+		   <td><label for="taille">Taille</label> : </td>
+		   <td><strong><?php echo $sqldata['Taille']; ?></strong></td>
+	   </tr>
+	   
+	   <tr><!--N°SECU-->
+		   <td><label for="numsecu">N&deg; S&eacute;curit&eacute; Sociale</label> : </td>
+		   <td><strong><?php echo $sqldata['NumSecu']; ?></strong></td>
+	   </tr>
+	   
+	   <tr height="30" valign="bottom"><!--PROFESSION-->
+		   <td><label for="profession">Profession</label> : </td>
+		   <td><strong><?php echo $sqldata['Profession']; ?></strong></td>
+	   </tr>
+	   
+	   <tr><!--ADRESSE-->
+		   <td><label for="adresse">Adresse</label> : </td>
+		   <td><strong><?php echo $sqldata['Adresse']; ?></strong></td>
+	   </tr>
+	   
+	   <tr><!--CODE POSTALE-->
+		   <td><label for="cp">Code postal</label> : </td>
+		   <td><strong><?php echo $sqldata['Cp']; ?></strong></td>
+	   </tr>
+	   
+	   <tr><!--VILLE-->
+		   <td><label for="ville">Ville</label> : </td>
+		   <td><strong><?php echo $sqldata['Ville']; ?></strong></td>
+	   </tr>
+	   
+	   <tr><!--PAYS-->
+		   <td><label for="pays">Pays</label> : </td>
+		   <td><strong><?php echo $sqldata['Pays']; ?></strong></td>
+	   </tr>
+	   
+	   <tr height="30" valign="bottom"><!--LANGUE-->
+		   <td><label for="langue">Langue</label> : </td>
+		   <td><strong><?php echo $sqldata['Langue']; ?></strong></td>
+	   </tr>
+	   
+	   <tr height="30" valign="bottom"><!--MAIL-->
+		   <td><label for="mail">Mail</label> : </td>
+		   <td><strong><a href="mailto:<?php echo $sqldata['Mail']; ?>"><?php echo $sqldata['Mail']; ?></a></strong></td>
+	   </tr>
+	   
+	   <tr><!--TELEPHONE DOMICILE-->
+		   <td><label for="telDom">T&eacute;l&eacute;phone Domicile</label> : </td>
+		   <td><strong><?php echo $sqldata['TelD']; ?></strong></td>
+	   </tr>
+	   
+	   <tr><!--TELEPHONE BUREAU-->
+		   <td><label for="telBureau">T&eacute;l&eacute;phone Bureau</label> : </td>
+		   <td><strong><?php echo $sqldata['TelB']; ?></strong></td>
+	   </tr>
+	   
+	   <tr><!--TELEPHONE PORTABLE-->
+		   <td><label for="telPortable">T&eacute;l&eacute;phone Portable</label> : </td>
+		   <td><strong><?php echo $sqldata['TelP']; ?></strong></td>
+	   </tr>
+	   
+	   <tr height="30" valign="bottom"><!--MOTIF-->
+		   <td><label for="motif">Motif</label> : </td>
+		   <td><strong><?php echo $sqldata['Motif']; ?></strong></td>
+	   </tr>
+	   
+	   
+	   <form action="fichePatient.php?PatientID=<?php echo $sqldata['Id'];?>" name="notes" method="post">
+	   <tr height="60" valign="bottom"><!--CHAMP NOTE-->
+	   	<td colspan="2"><label for="note">Notes concernant <strong><?php echo strtoupper($sqldata['Nom'])." ". ucfirst(strtolower($sqldata['Prenom'])) ?></strong> </label> : <br />
+			Inserer la date : <img src="images/iconeCalendrier.png" OnClick="DisplayTextNonHtlm('note');" style="cursor:pointer;"/>
+		</td>
+	   </tr>
+	   <tr>
+	   	<td colspan="2"><textarea cols="80" rows="20" name="note" id="note" onkeyup="ajaxNotes()"><?php echo $sqldata['Notes']; ?></textarea></td>
+	   </tr>
+	   <tr>
+	   	<td colspan="2"><input type="hidden" name="PatientID" id="PatientID"  value="<?php echo $sqldata['Id']; ?>" >
+	   		<center><input type="submit" value="Modifier les notes" name="modifNote"/></center>
+		</td>
+	   </tr>
+	   </form>
+	   <tr height="40"><!--BOUTONS-->
+		   	<td colspan="2">
+		   		<center>
+			   		<table cellpadding="0" cellspacing="0" border="0">
+                    	<tr>
+			   				<td valign="bottom"><input type="button" onclick="redirOrdo()" value="Ordonnances"/>&nbsp;&nbsp;</td>
+			   				<td valign="bottom"><input type="button" onclick="redirDevisManager()" value="Gestion Devis"/></td>
+						</tr>
+			   		</table>
+		   		</center>
+			</td>
+	   </tr>
+	   <tr height="30"><!--BOUTONS-->
+	   	<td colspan="2"><center>
+	   		<table cellpadding="0" cellspacing="0" border="0">
+	   			<tr>
+	   				<td valign="top"><input type="button" onclick="redirModifInfos()" value="Modifier informations" name="modifInfo"/>&nbsp;&nbsp;</td>
+					<td valign="top">
+						<form method="post" onclick="return ConfirmMessage();">
+							<input type="hidden" name="PatientID" value="<?php echo $sqldata['Id']; ?>" ><input type="submit" value="Supprimer" name="Supprimer"/>&nbsp;&nbsp;
+						</form>
+					</td>
+					<td valign="top"><input type="button" onclick="redirCROManager()" value="Gestion CRO"/>&nbsp;&nbsp;</td>
+                    <td valign="top"><input type="button" onclick="redirDoc()" value="Documents (<?php echo $sqldatadoc['count']; ?>)"/>&nbsp;&nbsp;</td>
+					<td valign="top"><input type="button" onclick="redirPhotos()" value="Photos"/></td>
+				</tr>
+	   		</table></center>
+		</td>
+	   </tr>
+	   <tr>
+	   	<td id="ancre" colspan="2"><a href="#haut_page" style="color:#5782af;text-decoration:none">Haut de page <img src="images/arrow_up.png" width="10" height="10" border="0"/></a></td>
+	   </tr>
+   
+   </table>
+   
+</div>
+   
+<?php 
+mysql_close();
+include("footer.html");
+?>

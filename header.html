@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" >
+   <head>
+       <title>GCM</title>
+       <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	   <link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+	   <script src="JQueryMultiple/jquery-1.2.6.js" type="text/javascript" language="javascript"></script> 
+	   <script src="JQueryMultiple/jquery.MultiFile.js" type="text/javascript" language="javascript"></script> 
+		<script>
+		
+	function verifNom()
+	{
+		var nom = document.getElementById("nom").value;
+		if(nom == "")
+		{
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+	
+	function getDate()
+	{
+		Today = new Date;
+		Jour = Today.getDate();
+
+		if(Jour < 10)
+		{
+			Jour = "0" + Jour + "/";	
+		}else
+		{
+			Jour = Jour + "/";
+		}
+		Mois = (Today.getMonth())+1;
+
+		if(Mois < 10)
+		{
+			Mois = "0" + Mois + "/";	
+		}else
+		{
+			Mois = Mois + "/";	
+		}
+		
+		Annee = Today.getFullYear();
+		return Jour + Mois + Annee;
+	}
+	
+	function InsertDateIntoDateInter()
+	{
+		document.getElementById('dateInter').value = getDate();
+	}
+	
+	function DisplayTextNonHtlm(textbox)
+		{
+
+		 var texte = getDate();
+
+		 objet = document.getElementById(textbox);
+
+		 texteTotal = objet.value;
+		 debutSelec = objet.selectionStart;
+		 finSelec = objet.selectionEnd;
+		 poscurseur = objet.scrollTop;
+
+		 debut = texteTotal.substring(0,debutSelec);
+		 fin = texteTotal.substring(finSelec,objet.textLength);
+
+		 objet.value = debut+' '+texte+' '+fin;
+		 objet.focus();
+
+		 objet.selectionEnd = objet.selectionEnd + texte.length;
+
+		objet.scrollTop = poscurseur;
+		}
+	
+	function verifDate()
+	{
+		var date = document.getElementById("dateNaissance").value;
+		var date_regexp = /^(\d{1,2}\/){2}\d{4}$/;
+		if (!date.match(date_regexp)  && date != "")
+		{
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+	
+	function verifMail()
+	{
+		var mail = document.getElementById("mail").value;
+		var mail_regexp = /^[a-z0-9._-]+@[a-z0-9.-]{2,}[.][a-z]{2,3}$/;
+		if ((!mail.match(mail_regexp)) && mail != "") 
+		{
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+	
+	function verifGlobale()
+	{
+		if(verifNom() == false)
+		{
+			alert('Le champs "Nom" est obligatoire.')
+			return false;
+		}
+		
+		if(verifDate() == false)
+		{
+			alert('Veuillez entrer une date valide (format jj/mm/aaaa).');
+			return false;
+		}
+		
+		if(verifMail() == false)
+		{
+			alert("L'adresse mail entree n'est pas valide.");
+			return false;
+		}
+		return true;
+	}
+	
+	function verifManagePhoto()
+	{
+		return true;
+	}
+	
+	function verifManageDoc()
+	{
+		return true;
+	}
+	
+	function confirmDel(lien)
+	{
+		if(confirm("Etes vous sur ?"))
+		{
+			document.location.href=lien			
+		}
+
+	}	
+
+
+	
+	function FunctionDisplayCro()
+	{
+		var value = document.getElementById('choixModel').value;
+		var reg=new RegExp("['#&#']", "g");
+		var tableau= value.split(reg);
+		var text = "";
+		for (i=1; i<tableau.length ; i++)
+			{
+			 text = text + tableau[i]
+			}
+
+		document.getElementById('titre').value = "";
+		document.getElementById('textecro').value = "";
+		document.getElementById('titre').value = tableau[0];
+		document.getElementById('textecro').value = text;
+	}
+	
+	function recupAnnee(id)
+	{
+		var dateN = document.getElementById(id).value;
+		var anneeN = dateN.substr(6, 4);		
+	}
+	
+	function redirIndex()
+	{
+		document.location.href="index.php";
+	}
+	
+	function redirModifInfos()
+	{
+		document.location.href="ficheModif.php?PatientId=<?php echo $sqldata['Id'];?>";
+	}
+	
+	function redirCROManager()
+	{
+		document.location.href="croManager.php?PatientId=<?php echo $sqldata['Id'];?>";
+	}
+	
+	function redirCRO()
+	{
+		document.location.href="cro.php?PatientId=<?php echo $sqldata['Id'];?>";
+	}
+	
+	function redirPhotos()
+	{
+		document.location.href="ManagePhoto.php?PatientId=<?php echo $sqldata['Id'];?>";
+	}
+	
+	function redirDoc()
+	{
+		document.location.href="ManageDocs.php?PatientId=<?php echo $sqldata['Id'];?>";
+	}
+	
+	function redirOrdo()
+	{
+		document.location.href="ficheOrdonnance.php?PatientId=<?php echo $sqldata['Id'];?>";
+	}
+	
+	function redirDevisManager()
+	{
+		document.location.href="devisManager.php?PatientId=<?php echo $sqldata['Id'];?>";
+	}
+	
+	function redirDevis()
+	{
+		document.location.href="devis.php?PatientId=<?php echo $sqldata['Id'];?>";
+	}
+	
+	function redirNouvPatient()
+	{
+		document.location.href="ficheVierge.php";
+	}
+	
+	function redirAjoutCRO()
+	{
+		document.location.href="ficheCROVierge.php";
+	}
+	
+	function redirModifDevis()
+	{
+		document.location.href="ficheDevisModif.php?IdDevis=<?php echo $_GET['IdDevis'];?>&PatientId=<?php echo $sqldata['PatientId'];?>";
+	}
+	
+	function updateImg(lien)
+	{
+		document.getElementById("apercuImage").src=lien;
+		
+	}
+	
+	function calculAge()
+	{
+		
+		var date = document.getElementById("dateNaissance").value;
+		var date_regexp = /^(\d{1,2}\/){2}\d{4}$/;
+		if (date.match(date_regexp)  && date != "")
+		{
+		var Now = new Date();
+		var value = document.getElementById('dateNaissance').value;
+		var jour =  value.substr(0,2);
+		var mois =  value.substr(3,2);
+		var Annee =  value.substr(6,4);
+		var DateN = new Date(Annee,mois,jour);
+		var test = Now.getTime() - DateN.getTime();
+		var valeur = ((((test / 1000) /3600)/24)/365);
+		document.getElementById('age').value = parseInt(valeur);
+		}
+	}
+	
+	
+	function ConfirmMessage() {
+       if (confirm("Etes-vous sur de vouloir supprimer ce patient ?"))
+       {
+           return true;
+       }
+       return false;
+   }
+   
+   function DisplayCcam(){
+	   if($Type == 'E')
+	   {
+	   document.getElementById('ccam').style.visibility="hidden";
+	   }
+	   else if($Type == 'M')
+	   {
+	   document.getElementById('ccam').style.visibility="visible";
+	   }
+	}
+   
+   function ajax(url, vars, callbackFunction){
+	        var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("MSXML2.XMLHTTP.3.0");
+	        request.open("POST", url, true);
+	        request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	        request.onreadystatechange = function(){
+	                if (request.readyState == 4 && request.status == 200) {
+	                        if (request.responseText){
+	                               callbackFunction(request.responseText);                                                   
+	                        }
+	                }
+	        };
+	        request.send(vars);
+		}
+		
+	var ajaxNotesEnCours = "";
+	function ajaxNotes()
+	{
+		var note = document.getElementById("note").value;
+		var id = document.getElementById("PatientID").value;
+		if(note != ajaxNotesEnCours)
+		{
+
+			ajax('AjaxNotes.php','modifNote=true&PatientID='+id+'&note='+note,gauthier);
+			ajaxNotesEnCours = note;
+		}
+	}
+	function gauthier(vars)
+	{
+
+	}
+	
+	
+
+
+	</script>
+
+   </head>
+   
+   <body>
+   	<div id="header" align="center" style="margin-top:20px">
+   		<a href="index.php" name="haut_page"><img src="images/header.png" width="806" height="107" border="0"/></a>
+	</div>

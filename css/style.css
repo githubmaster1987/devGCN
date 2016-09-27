@@ -1,0 +1,63 @@
+body {
+	margin:0px 0px;
+	padding:0px;
+	background-color:#d2eafa;
+}
+
+td{
+	text-align:left;
+}
+
+#header{
+	width:806px;
+	height:107px;
+	margin:0px auto;
+	
+}
+
+h3{
+	color:#5782af;
+}
+
+#menu a{
+	color:#000000;
+}
+
+#menu a:hover{
+	color:red;
+	Font-Weight: Bold;
+}
+
+
+#footer{
+	width:806px;
+	height:56px;
+	margin:0px auto;
+	
+}
+
+#content{
+	width:806px;
+	margin:0px auto;
+	padding:0px;
+	background-color:white;
+	font-family:Verdana;
+	color:#5782af;
+	font-size:12px;
+	padding-top:20px;
+	padding-bottom:20px;
+
+}
+
+fieldset{
+	border:1px #5782af groove;
+	color:#5782af; 
+}
+
+#ancre{
+	text-align:right;
+}
+
+#photo{
+	max-width: 800px;
+}

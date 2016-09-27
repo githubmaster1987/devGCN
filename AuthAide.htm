@@ -1,0 +1,25 @@
+Normal : 
+
+Require("Auth.inc.php");
+
+
+Admin :
+
+session_start(); // On relaye la session
+if (session_is_registered("auth" . date('Y-m-d') . "GCM") && $_SESSION['privilege'] == "admin"){ // vérification sur la session authentification (la session est elle enregistrée ?)
+// On vérifie également si la session ouverte est bien une session admin et on place ici les éventuelles actions en cas de réussite de la connexion
+}
+else {
+header("Location:Authentification.php?erreur=intru"); // redirection en cas d'echec
+}
+
+
+Require("connexionBDD.php");
+session_start(); // On relaye la session
+if (session_is_registered("auth" . date('Y-m-d') . "GCM")){ // vérification sur la session authentification (la session est elle enregistrée ?)
+// ici les éventuelles actions en cas de réussite de la connexion
+}
+else {
+header("Location:Authentification.php?erreur=intru"); // redirection en cas d'echec
+}
+include("header.html");

@@ -1,0 +1,4 @@
+options -indexes
+
+RewriteEngine On
+RewriteRule (.+)\.((html|HTML|htm|HTM|pdf|PDF|jpeg|JPEG|jpg|JPG|gif|GIF|png|PNG|bmp|BMP|doc|DOC|docx|DOCX|xlsx|XLSX|xls|XLS))$ VerifDroit.php?lien=$1&ext=$2 [NC,L]
